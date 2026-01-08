@@ -1,7 +1,7 @@
 """FastAPI PayFast Integration Package"""
 
-__version__ = "1.0.0"
-__author__ = "Your Name"
+__version__ = "0.0.1"
+__author__ = "Carrington Muleya"
 
 from .client import PayFastClient
 from .config import PayFastConfig
