@@ -15,15 +15,7 @@ from fastapi_payfast import (
 )
 
 
-
-
 BASE_SITE = "localhost:8000"  # Replace with your domain
-
-# Initialize PayFast client
-payfast = PayFastClient(config)
-
-
-
 
 # Initialize FastAPI app
 app = FastAPI(
