@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import Mock, AsyncMock, patch
 from fastapi import Request
 from fastapi.responses import HTMLResponse
+from dotzen import config
 
 from fastapi_payfast import (
     PayFastClient,
@@ -22,7 +23,7 @@ def config():
     return PayFastConfig(
         merchant_id="10000100",
         merchant_key="46f0cd694581a",
-        passphrase="jt7NOE43FZPn",
+        passphrase=config.get("PAYFAST_PASSPHRASE", "your_passphrase"),
         sandbox=True
     )
 
