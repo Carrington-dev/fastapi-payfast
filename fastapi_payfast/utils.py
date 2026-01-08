@@ -5,32 +5,16 @@ import urllib.parse
 from typing import Dict, Any, Optional
 
 
-def generate_signature(data: Dict[str, Any], passphrase: Optional[str] = None) -> str:
-    """
-    Generate MD5 signature for PayFast
-    
-    Args:
-        data: Dictionary of payment data
-        passphrase: Optional passphrase for additional security
-        
-    Returns:
-        MD5 hash signature
-    """
-    # Create parameter string
-    param_string = ""
-    for key in sorted(data.keys()):
-        if key != 'signature' and data[key] is not None and data[key] != '':
-            param_string += f"{key}={urllib.parse.quote_plus(str(data[key]))}&"
-    
-    # Remove last ampersand
-    param_string = param_string.rstrip('&')
-    
-    # Add passphrase if provided
-    if passphrase:
-        param_string += f"&passphrase={urllib.parse.quote_plus(passphrase)}"
-    
-    # Generate and return signature
-    return hashlib.md5(param_string.encode()).hexdigest()
+def generate_signature(dataArray, passPhrase = ''):
+    payload = ""
+    for key in dataArray:
+        # Get all the data from Payfast and prepare parameter string
+        payload += key + "=" + urllib.parse.quote_plus(str(dataArray[key]).replace("+", " ")) + "&"
+    # After looping through, cut the last & or append your passphrase
+    payload = payload[:-1]
+    if passPhrase != '':
+        payload += f"&passphrase={passPhrase}"
+    return hashlib.md5(payload.encode()).hexdigest()
 
 
 def generate_payment_form_html(action_url: str, data: Dict[str, Any]) -> str:
