@@ -34,9 +34,9 @@ app = FastAPI(
 
 # Configure PayFast from environment variables or defaults
 config = PayFastConfig(
-    merchant_id=config("PAYFAST_MERCHANT_ID", "10000100"),
-    merchant_key=config("PAYFAST_MERCHANT_KEY", "46f0cd694581a"),
-    passphrase=config("PAYFAST_PASSPHRASE", "jt7NOE43FZPn"),
+    merchant_id=config("PAYFAST_MERCHANT_ID", "your_merchant_id_here"),
+    merchant_key=config("PAYFAST_MERCHANT_KEY", "your_merchant_key_here"),
+    passphrase=config("PAYFAST_PASSPHRASE", "your_passphrase_here"),
     sandbox=config("PAYFAST_SANDBOX", True, cast=bool) == True,
 )
 
