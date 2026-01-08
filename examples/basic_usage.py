@@ -2,7 +2,8 @@
 
 import os
 from datetime import datetime
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
+from typing import Optional
 from fastapi.responses import HTMLResponse, RedirectResponse
 from dotzen import config
 from fastapi_payfast import (
@@ -184,7 +185,6 @@ async def home():
 
 
 
-
 @app.get("/checkout")
 async def create_checkout(
     amount: float,
@@ -210,6 +210,33 @@ async def create_checkout(
     
     # Return HTML response that redirects to PayFast
     return payfast.generate_payment_response(payment_data)
+
+@app.post("/checkout")
+async def create_checkout_post(
+    amount: float = Form(...),
+    item_name: str = Form(...),
+    item_description: Optional[str] = Form(None),
+    customer_email: Optional[str] = Form(None)
+):
+    
+    """Create a payment checkout (POST with form data)"""
+
+    # Create payment data
+    payment_data = PayFastPaymentData(
+        merchant_id=config.merchant_id,
+        merchant_key=config.merchant_key,
+        amount=amount,
+        item_name=item_name,
+        item_description=item_description,
+        email_address=customer_email,
+        return_url=f"https://{ BASE_SITE }/payment/success",
+        cancel_url=f"https://{ BASE_SITE }/payment/cancel",
+        notify_url=f"https://{ BASE_SITE }/payment/notify",
+        m_payment_id=f"ORDER-{int(datetime.now().timestamp())}"
+    )
+    # Return HTML response that redirects to PayFast
+    return payfast.generate_payment_response(payment_data)
+
 
 
 @app.post("/payment/notify")
