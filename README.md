@@ -1,32 +1,7 @@
 # FastAPI PayFast Package - Complete Project Structure
 
-## 📄 requirements.txt
-```
-fastapi>=0.104.0
-pydantic>=2.0.0
-python-multipart>=0.0.6
-uvicorn[standard]>=0.23.0
-```
 
-## 📄 requirements-dev.txt
-```
-# Testing
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-pytest-cov>=4.1.0
-httpx>=0.24.0
 
-# Code Quality
-black>=23.7.0
-isort>=5.12.0
-flake8>=6.1.0
-mypy>=1.5.0
-pylint>=2.17.0
-
-# Development
-pre-commit>=3.3.0
-ipython>=8.14.0
-```
 
 ## 📄 pyproject.toml
 ```toml
