@@ -1,0 +1,5 @@
+dotzen
+fastapi
+uvicorn
+pydantic
+fastapi-payfast
