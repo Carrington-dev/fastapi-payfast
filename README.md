@@ -165,7 +165,7 @@ pytest --cov=fastapi_payfast --cov-report=html
 Setup development environment:
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/fastapi-payfast.git
+git clone https://github.com/carrington-dev/fastapi-payfast.git
 cd fastapi-payfast
 
 # Install with dev dependencies
@@ -190,7 +190,7 @@ pytest
 
 - [PayFast Documentation](https://developers.payfast.co.za/)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Issue Tracker](https://github.com/yourusername/fastapi-payfast/issues)
+- [Issue Tracker](https://github.com/carrington-dev/fastapi-payfast/issues)
 
 ## License
 
@@ -204,7 +204,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 For PayFast-specific issues, contact [PayFast Support](https://www.payfast.co.za/contact/).
 
-For package issues, please use the [GitHub issue tracker](https://github.com/yourusername/fastapi-payfast/issues).
+For package issues, please use the [GitHub issue tracker](https://github.com/carrington-dev/fastapi-payfast/issues).
 ```
 
 ## 📄 Makefile (Optional but helpful)
