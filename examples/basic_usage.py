@@ -1,8 +1,10 @@
 """Basic usage example"""
 
-from fastapi import FastAPI, Request
+import os
 from datetime import datetime
-
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from dotzen import config
 from fastapi_payfast import (
     PayFastClient,
     PayFastConfig,
@@ -12,22 +14,186 @@ from fastapi_payfast import (
     InvalidMerchantError
 )
 
-# Initialize FastAPI app
-app = FastAPI(title="PayFast Integration Example")
 
-# Configure PayFast (use environment variables in production)
+
+
+BASE_SITE = "localhost:8000"  # Replace with your domain
+
+# Initialize PayFast client
+payfast = PayFastClient(config)
+
+
+
+
+# Initialize FastAPI app
+app = FastAPI(
+    title="PayFast Integration Example",
+    description="Complete PayFast payment integration with FastAPI",
+    version="1.0.0"
+)
+
+# Configure PayFast from environment variables or defaults
 config = PayFastConfig(
-    merchant_id="10000100",
-    merchant_key="46f0cd694581a",
-    passphrase="jt7NOE43FZPn",
-    sandbox=True
+    merchant_id=config("PAYFAST_MERCHANT_ID", "10000100"),
+    merchant_key=config("PAYFAST_MERCHANT_KEY", "46f0cd694581a"),
+    passphrase=config("PAYFAST_PASSPHRASE", "jt7NOE43FZPn"),
+    sandbox=config("PAYFAST_SANDBOX", True, cast=bool) == True,
 )
 
 # Initialize PayFast client
 payfast = PayFastClient(config)
 
 
-@app.post("/checkout")
+@app.get("/")
+async def home():
+    """Home page with payment form"""
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PayFast Payment Demo</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+            .container {
+                background: white;
+                padding: 40px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                max-width: 500px;
+                width: 100%;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 10px;
+                font-size: 28px;
+            }
+            .subtitle {
+                color: #666;
+                margin-bottom: 30px;
+                font-size: 14px;
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: #333;
+                font-weight: 500;
+                font-size: 14px;
+            }
+            input, textarea {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 14px;
+                transition: border-color 0.3s;
+            }
+            input:focus, textarea:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+            textarea {
+                resize: vertical;
+                min-height: 80px;
+            }
+            .btn {
+                width: 100%;
+                padding: 14px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            }
+            .btn:active {
+                transform: translateY(0);
+            }
+            .info-box {
+                background: #f0f4ff;
+                border-left: 4px solid #667eea;
+                padding: 15px;
+                margin-bottom: 25px;
+                border-radius: 4px;
+                font-size: 13px;
+                color: #555;
+            }
+            .required {
+                color: #e74c3c;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🛒 PayFast Payment</h1>
+            <p class="subtitle">Secure payment processing with PayFast</p>
+            
+            <div class="info-box">
+                ℹ️ This is a <strong>sandbox environment</strong>. No real charges will be made.
+            </div>
+            
+            <form action="/checkout" method="post">
+                <div class="form-group">
+                    <label for="amount">Amount (ZAR) <span class="required">*</span></label>
+                    <input type="number" id="amount" name="amount" step="0.01" min="0.01" 
+                           placeholder="e.g. 99.99" required value="123.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="item_name">Item Name <span class="required">*</span></label>
+                    <input type="text" id="item_name" name="item_name" 
+                           placeholder="e.g. Product Name" required value="Donation">
+                </div>
+                
+                <div class="form-group">
+                    <label for="item_description">Description</label>
+                    <textarea id="item_description" name="item_description" 
+                              placeholder="Brief description of the purchase">Donation to PayFast</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customer_email">Email Address</label>
+                    <input type="email" id="customer_email" name="customer_email" 
+                           placeholder="your@email.com" value="customer@example.com">
+                </div>
+                
+                <button type="submit" class="btn">
+                    Proceed to Payment →
+                </button>
+            </form>
+        </div>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content)
+
+
+
+
+@app.get("/checkout")
 async def create_checkout(
     amount: float,
     item_name: str,
@@ -44,9 +210,9 @@ async def create_checkout(
         item_name=item_name,
         item_description=item_description,
         email_address=customer_email,
-        return_url="https://yoursite.com/payment/success",
-        cancel_url="https://yoursite.com/payment/cancel",
-        notify_url="https://yoursite.com/payment/notify",
+        return_url=f"https://{ BASE_SITE }/payment/success",
+        cancel_url=f"https://{ BASE_SITE }/payment/cancel",
+        notify_url=f"https://{ BASE_SITE }/payment/notify",
         m_payment_id=f"ORDER-{int(datetime.now().timestamp())}"
     )
     
